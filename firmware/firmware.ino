@@ -1,32 +1,36 @@
 #include <Servo.h>
 
+// Sonar pins
 #define TRIGGER_PIN 12    
 #define ECHO_PIN 11
 #define SONAR_GND 10
 #define SONAR_VCC 13
 
+// Servo pins
 #define SERVO_PIN 9
 
+// LED pins
 #define LED 7
 #define LED_GND 6
 
+// Pins for switching rounds
 #define SWITCH0 A0
 #define SWITCH1 A1
-
 #define ROUND_1 3
 #define ROUND_2 2
 
-#define MAX_DISTANCE 200  // maximum distance set to 200 cm
-
+// Boolean definitions
 #define TRUE 1
 #define FALSE 0
+
+#define MAX_DISTANCE 200  // maximum distance set to 200 cm
 
 Servo myservo;
 int pos = 0;
 
 // ROUND 1 VARIABLES
 float pickUpHeight = 8.5;
-float midHeight = 30; // 30 + 8
+float midHeight = 30;
 float dropHeight = 20;
 
 int openPos = 0;
@@ -45,15 +49,12 @@ float height = standHeight + blockHeight / 2 + servoHeight;
 
 const int r2ClosePos = 83;
 
-// 
-
 void setup() {
   Serial.begin(9600);
   pinMode(TRIGGER_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(SONAR_GND, OUTPUT);
   pinMode(SONAR_VCC, OUTPUT);
-
   pinMode(LED, OUTPUT);
   pinMode(LED_GND, OUTPUT);
 
@@ -71,10 +72,10 @@ void setup() {
   digitalWrite(SWITCH1, HIGH);
   
   myservo.attach(SERVO_PIN);
-
   moveServo(openPos);
 
   if (digitalRead(ROUND_2) == HIGH) {
+    // Use round 2 parameters
     closePos = r2ClosePos;
     pickUpHeight = height;
     midHeight = pickUpHeight + 5;
@@ -83,7 +84,6 @@ void setup() {
 
   getDist();
   delay(1000);
-  
 }
 
 void loop() { 
@@ -116,16 +116,14 @@ void loop() {
 }
 
 float getDist() {
-  digitalWrite(TRIGGER_PIN, LOW);   // Clears the trigPin
+  digitalWrite(TRIGGER_PIN, LOW); 
   delayMicroseconds(2);
-  digitalWrite(TRIGGER_PIN, HIGH);  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(TRIGGER_PIN, HIGH);
   delayMicroseconds(20);
   digitalWrite(TRIGGER_PIN, LOW);  
 
   int duration = pulseIn(ECHO_PIN, HIGH);
   float distance = duration * 0.034 / 2;
-
-  myservo.write(pos); // reset to 0
 
   return distance;
 }
@@ -147,10 +145,10 @@ void moveServo(int target) {
 String readSerial() {
   String input;
   while (Serial.available()) {
-    delay(3);  //delay to allow buffer to fill 
+    delay(3);  // delay to allow buffer to fill 
     if (Serial.available() > 0) {
-      char c = Serial.read();  //gets one byte from serial buffer
-      input += c; //makes the string readString
+      char c = Serial.read();  // gets one byte from serial buffer
+      input += c; // makes the string readString
     } 
   }
   return input;
